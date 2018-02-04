@@ -1,0 +1,88 @@
+<head>
+    <meta charset="utf-8">
+    <title>Развлекательный турнир по игре Heroes of the Storm</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="icon" sizes="64x64" href="/favico.ico">
+</head>
+
+<body>
+
+</body>
+
+<template name="AppLayout">
+    <div class="wrapper">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <a class="navbar-brand" href="{{pathFor 'index'}}">HOTS FUN</a>
+
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav mr-auto">
+                    {{#each menu}}
+                        <li class="nav-item {{#if isCurrent}}active{{/if}}">
+                            <a class="nav-link" href="{{pathFor key}}">{{name}}</a>
+                        </li>
+                    {{/each}}
+                </ul>
+            </div>
+
+            <a class="nav-link" href="#">Моя учётная запись на Battle.net<span class="icon-external-link">→</span></a>
+        </nav>
+
+        <div class="yield pt-5">
+            {{>yield}}
+        </div>
+    </div>
+    <div class="footer pt-5 pb-5 ">
+        <div class="container pt-5">
+            <div class="row pt-5">
+                <div class="col-3">
+                    <a href="https://vk.com/hots_fun_tournament" target="_blank">
+                        <span class="social vk mr-2"></span>
+                        Группа VK
+                        <span class="icon-external-link">→</span>
+                    </a>
+                </div>
+                <div class="col-3">
+                    <a href="https://www.youtube.com/channel/UCckOSjPhpVITuw2wNDy64aw" target="_blank">
+                        <span class="social youtube mr-2"></span>
+                        Канал YouTube
+                        <span class="icon-external-link">→</span>
+                    </a>
+                </div>
+                <div class="col-3">
+                    <a href="https://www.twitch.tv/hotsfun" target="_blank">
+                        <span class="social twitch mr-2"></span>
+                        Канал Twitch
+                        <span class="icon-external-link">→</span>
+                    </a>
+                </div>
+                <div class="col-3">
+                    <a href="https://eu.battle.net/heroes/ru/" target="_blank">
+                        <span class="social hots mr-2"></span>
+                        Сайт игры Heroes of the Storm
+                        <span class="icon-external-link">→</span>
+                    </a>
+                </div>
+            </div>
+            <div class="row pt-5">
+                <div class="col-6">
+                    Все упомянутые товарные знаки являются собственностью соответствующих владельцев.
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-6">
+                    Heroes of the Storm™ является товарным знаком или зарегистрированным товарным знаком компании Blizzard Entertainment в США и (или) других государствах.
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-6">
+                    <a href="http://eu.blizzard.com/ru-ru/company/about/copyrightnotices.html" target="_blank"><u>Copyright Notices компании Blizzard и другие юридические вопросы.</u></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</template>
+
+<template name="Error404">
+    Страница не найдена
+</template>
