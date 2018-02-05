@@ -29,5 +29,29 @@ UserModel = {
         }*/
 
         return user_id;
+    },
+
+    goToPool: function() {
+        Meteor.users.update({_id: Meteor.userId()}, {$set: {pool: -1}});
+    },
+
+    outFromPool: function() {
+        Meteor.users.update({_id: Meteor.userId()}, {$set: {pool: 0}});
+    },
+
+    loginFromAdmin: function (_id) {
+        let stampedLoginToken = Accounts._generateStampedLoginToken();
+        Accounts._insertLoginToken(_id, stampedLoginToken);
+        return stampedLoginToken;
     }
 };
+
+Meteor.methods({
+
+    'user.goToPool': UserModel.goToPool,
+    'user.outFromPool': UserModel.outFromPool,
+
+
+    'user.loginFromAdmin': UserModel.loginFromAdmin,
+
+});

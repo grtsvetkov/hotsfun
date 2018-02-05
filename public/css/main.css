@@ -8,19 +8,29 @@ body {
     font-family: "Open Sans",Helvetica,Arial,sans-serif;
 }
 
+ul {
+    list-style-type: decimal;
+}
+
+
 .wrapper {
     flex: 1 1 auto;
     background: #0d0119 url('img/global-bg.jpg') center 0 no-repeat;
     font-family: Metronic,"Myriad Pro",Myriad,Arial,sans-serif;
     font-weight: 400;
     color: #fff;
-    text-shadow: 0 0 17px #009cff;
+    text-shadow: 0 0 17px rgba(0, 156, 255, 0.3);;
     font-size: 1.2em;
 }
 
 .yield {
     padding: 0 30px 30px 30px;
 
+}
+
+.topMenu .dropdown-item, .topMenu .dropdown-item:hover, .topMenu .dropdown-item:focus {
+    color: #007bff;
+    background-color: transparent;
 }
 
 .footer {
@@ -263,3 +273,15 @@ body {
 }
 /*pool*/
 
+/*player*/
+.player {
+    text-indent: 0.5em;
+    padding: 2px;
+    border-radius: 5px;
+    background-color: rgba(110, 110, 110, 0.5);
+}
+
+.player.self {
+    background-color: rgba(110, 110, 110, 0.7);
+}
+/*player*/

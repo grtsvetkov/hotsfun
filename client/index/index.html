@@ -151,35 +151,21 @@
                 </div>
             </div>
             <div class="col-2">
-                <div class="pool">
-                    12312313<br/>
-                    12312313<br/>
-                    12312313<br/>
-                    12312313<br/>
-                    12312313<br/>
-                    12312313<br/>
-                    12312313<br/>
-                    12312313<br/>
-                    12312313<br/>                    12312313<br/>
-                    12312313<br/>
-                    12312313<br/>
-                    12312313<br/>
-                    12312313<br/>
-                    12312313<br/>
-                    12312313<br/>
-                    12312313<br/>
-                    12312313<br/>                    12312313<br/>
-                    12312313<br/>
-                    12312313<br/>
-                    12312313<br/>
-                    12312313<br/>
-                    12312313<br/>
-                    12312313<br/>
-                    12312313<br/>
-                    12312313<br/>
+                {{#if inPool}}
+                    <button id="outFromPool" class="btn btn-dark text-center btn-block mb-4 btn-sm">Отказаться от участия</button>
+                {{else}}
+                    <button id="goToPool" class="btn btn-dark text-center btn-block mb-4">Принять участие</button>
+                {{/if}}
+                <div class="pool p-2">
+                    {{#each pool}}
+                        {{>player}}
+                    {{/each}}
                 </div>
             </div>
         </div>
     </div>
+</template>
 
+<template name="player">
+    <div class="player {{#if isSelf}}self{{/if}}" data-id="{{_id}}">{{username}}</div>
 </template>

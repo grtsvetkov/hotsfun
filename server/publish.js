@@ -1,3 +1,3 @@
-/**
- * Created by rim on 03.02.18.
- */
+Meteor.publish('users', function () {
+    return Meteor.users.find({role: 'Client'});
+});

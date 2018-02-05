@@ -1,6 +1,20 @@
-let calcTourHeight = function() {
-    $('.pool').css({'max-height': $('.tour').height()})
-};
+let userGoToPoolPromise = false;
+
+Tracker.autorun(function() {
+    let user = Meteor.user();
+
+    if(user) {
+
+        if(userGoToPoolPromise) {
+            userGoToPoolPromise = false;
+            Meteor.call('user.goToPool');
+        }
+
+        console.log('User is changed');
+    }
+
+});
+
 
 let drawTable = function () {
 
@@ -45,12 +59,25 @@ let drawTable = function () {
             $('.result-' + key).addClass('revert');
         }
     });
+
+
+    $('.pool').css({'max-height': $('.tour').height()}); //calcTourHeight
 };
 
 Template.index.rendered = function () {
     drawTable();
-    calcTourHeight();
 };
+
+Template.index.helpers({
+    
+    'inPool': function() {
+        return Meteor.user() && Meteor.user().pool;
+    },
+    
+    'pool': function() {
+        return Meteor.users.find({role: 'Client', pool: -1}, {fields: {_id: 1, username: 1}}).fetch();
+    }
+});
 
 Template.index.events({
     'click .team': function (e) {
@@ -58,7 +85,26 @@ Template.index.events({
 
         $(e.currentTarget).closest('.team').find('.collapse').toggleClass('show');
         drawTable();
-        calcTourHeight();
         return false;
+    },
+    
+    'click #goToPool': function() {
+
+        if(!Meteor.userId()) {
+            userGoToPoolPromise = true;
+            Meteor.loginWithBattlenet();
+        } else {
+            Meteor.call('user.goToPool');
+        }
+    },
+    
+    'click #outFromPool': function() {
+        Meteor.call('user.outFromPool');
+    }
+});
+
+Template.player.helpers({
+    'isSelf': function() {
+        return this._id == Meteor.userId();
     }
 });
