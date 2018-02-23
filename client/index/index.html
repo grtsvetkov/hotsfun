@@ -1,7 +1,7 @@
 <template name="index">
     <div class="container-fluid">
         <div class="row">
-            <div class="col-10 p-2">
+            <div class="col-10 p-2 pr-3">
                 <div class="tour container-fluid p-0">
                     {{#each tour_list}}
                         <div class="round-{{tour}}">
@@ -31,8 +31,17 @@
                             {{/each}}
                         </div>
                     {{/each}}
-                    <div class="round-4">
-
+                    <div class="round-winner">
+                        {{#with winner}}
+                            <div class="list">
+                                <p>Поздаравляем команду<br/> победителя "<strong>{{name}}</strong>"!</p>
+                                <ul class="none">
+                                    {{#each list}}
+                                        <li>{{>player}}</li>
+                                    {{/each}}
+                                </ul>
+                            </div>
+                        {{/with}}
                     </div>
                 </div>
             </div>

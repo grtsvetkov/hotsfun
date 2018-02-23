@@ -25,10 +25,13 @@
             </div>
 
             {{#with login}}
-                <div class="dropdown">
+                <div class="accountMenu dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="dropdownLoginMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{.}}</a>
                     <div class="dropdown-menu dropdown-menu-right bg-dark" aria-labelledby="dropdownLoginMenu">
                         <a class="dropdown-item" href="#" onclick="Meteor.logout()">Выход</a>
+                        {{#if isAdmin}}
+                            <a id="newTour" class="dropdown-item" href="#">Новый турнир</a>
+                        {{/if}}
                     </div>
                 </div>
             {{else}}

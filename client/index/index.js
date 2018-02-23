@@ -86,11 +86,6 @@ Template.index.onDestroyed(function() {
 });
 
 Template.index.helpers({
-
-    'isAdmin': function() {
-        return isAdmin();
-    },
-
     'inPool': function() {
 
         let user = Meteor.user();
@@ -162,6 +157,36 @@ Template.index.helpers({
 
         Meteor.setTimeout(drawTable, 333);
         return tour_list;
+    },
+
+    'winner': function() {
+        let i = Variable.findOne({name: 'win'});
+        
+        if(!i || !i.data || !i.data.command) {
+            return;
+        }
+        
+        let list = [],
+            data = Command.findOne({num: parseInt(i.data.command)});
+
+        _.each(data.list, function(i) {
+            let user = Meteor.users.findOne({_id: i});
+
+            if(!user) {
+                return;
+            }
+
+            list.push({
+                _id: user._id,
+                username: user.username,
+                online: user.online
+            })
+        });
+        
+        return {
+            name: data.name,
+            list: list
+        }
     }
 });
 

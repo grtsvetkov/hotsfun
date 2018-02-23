@@ -12,6 +12,11 @@ ul {
     list-style-type: decimal;
 }
 
+ul.none {
+    list-style-type: none;
+    padding: 0;
+}
+
 
 .wrapper {
     flex: 1 1 auto;
@@ -21,6 +26,10 @@ ul {
     color: #fff;
     text-shadow: 0 0 17px rgba(0, 156, 255, 0.3);;
     font-size: 1.2em;
+}
+
+.accountMenu {
+    min-width: 10rem;
 }
 
 #blurWrapperFooter {
@@ -129,11 +138,18 @@ ul {
     margin-top: 20px;
 }
 
-.round-1, .round-2, .round-3, .round-4 {
+.round-1, .round-2, .round-3, .round-winner {
     display: flex;
     flex-direction: column;
     justify-content: center;
     width: 25%;
+}
+
+.round-winner div.list{
+    font-size: 110%;
+    box-shadow: 0px 0px 80px rgba(255, 255, 255, 0.3);
+    border-radius: 12px;
+    padding: 10px;
 }
 
 .team {

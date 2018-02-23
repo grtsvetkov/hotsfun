@@ -1,5 +1,5 @@
 .idea/
 node_modules/
-/mup.json
+mup.json
 /private/
 /public/.well-known/

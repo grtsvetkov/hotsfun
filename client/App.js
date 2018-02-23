@@ -34,10 +34,17 @@ Template.AppLayout.helpers({
     }
 });
 
-testLogin = function() {
-    Meteor.call('user.loginFromAdmin', 'gXNS4JbAxjKkx53kH', function (error, result) {
-        if (!error) Meteor.loginWithToken(result.token, function () {
-            Router.go('/');
-        });
-    });
-};
+Template.AppLayout.events({
+    'click #newTour': function() {
+        if(!isAdmin()) {
+            return;
+        }
+
+        Meteor.call('tour.newTour', function(err){
+            if(err) {
+                console.log(err);
+                sAlert.error(err.reason);
+            }
+        })
+    }
+});

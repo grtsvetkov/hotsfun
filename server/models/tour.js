@@ -19,6 +19,7 @@ TourModel = {
         UserModel.moveAllToPool(); //Выгоняем всех в пулл
         Tour.remove({}); //Удаляем турнамент
         Command.remove({}); //Удаляем все команды
+        Variable.remove({name: 'win'});
 
         let commandPull = []; //Пулл комманд
 
@@ -94,7 +95,7 @@ TourModel = {
 
         } else { //Была последняя игра, финал. Определяем победителя турнира.
 
-            //Была последняя игра, финал. Определяем победителя турнира.
+            Variable.insert({name: 'win', data: { command: data.win }});
 
         }
 

@@ -9,3 +9,7 @@ Meteor.publish('tour', function () {
 Meteor.publish('command', function () {
     return Command.find({});
 });
+
+Meteor.publish('variable', function () {
+    return Variable.find({});
+});
