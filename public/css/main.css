@@ -23,6 +23,25 @@ ul {
     font-size: 1.2em;
 }
 
+#blurWrapperFooter {
+    position: relative;
+    width: 100%;
+    height: 80px;
+    top: -66px;
+    z-index: 1;
+    overflow: hidden;
+}
+
+#blurWrapperFooter div {
+    position: relative;
+    width: 110%;
+    height: 70px;
+    filter: blur(17px);
+    background: linear-gradient(#1c0d2a, #01224b);
+    z-index: 1;
+    left: -5%;
+}
+
 .yield {
     padding: 0 30px 30px 30px;
 
@@ -36,7 +55,7 @@ ul {
 .footer {
     flex: 0 0 auto;
     min-height: 350px;
-    background: #0e001a url('img/footer-bg.jpg') center 0 no-repeat;
+    background: #00214a url('img/footer-bg.jpg') center 0 no-repeat;
 
     text-decoration: none;
     color: rgba(255, 255, 255, 0.8);
@@ -59,12 +78,13 @@ ul {
     text-shadow: 0 0 17px #009cff;
 }
 
-.icon-external-link {
+.icon-external-link:after {
+    content: "→";
     font-size: 0.7em;
     display: inline-block;
     transform: rotate(-45deg);
     vertical-align: top;
-    margin-left: 5px;
+    margin-top:-3px;
 }
 
 .social{
@@ -117,24 +137,32 @@ ul {
 }
 
 .team {
-    border: 1px solid rgba(204, 204, 204, 0.3);
+    border: 1px solid rgba(204, 204, 204, 0.6);
     border-radius: 5px;
+    min-height: 30px;
 }
 
 .team.team-top {
     border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
 }
 
 .team.team-bottom {
     margin-top: 4px;
     border-top-right-radius: 0;
+    border-top-left-radius: 0;
 }
 
 .team a {
-    margin-left: 7px;
-    padding-left: 3px;
     color: #ffffff;
 }
+
+.team a .small{
+    font-size: 70%;
+    opacity: 0.5;
+    color: gray;
+}
+
 
 .team a:hover {
     color: #ffffff;
@@ -142,9 +170,28 @@ ul {
     border-bottom: 1px dashed #ffffff;
 }
 
-.team .collapse {
+.team:before {
+    content: "⬢";
+    color: #ca161c;
+    vertical-align: top;
+    font-size: 0.9em;
+    opacity: 0.5;
+    margin-right: 4px;
     margin-left: 7px;
-    padding-left: 3px;
+}
+
+.team.online:before {
+    color: #4edff9;
+    opacity: 0.7;
+}
+
+.team .collapse {
+    margin-left: 1.3em;
+}
+
+.team .collapse .player{
+    margin: 0.1em;
+    border-radius: 0;
 }
 
 
@@ -279,6 +326,25 @@ ul {
     padding: 2px;
     border-radius: 5px;
     background-color: rgba(110, 110, 110, 0.5);
+
+    -webkit-user-select: none; /* webkit (safari, chrome) browsers */
+    -moz-user-select: none; /* mozilla browsers */
+    -khtml-user-select: none; /* webkit (konqueror) browsers */
+    -ms-user-select: none; /* IE10+ */
+}
+
+.player:before {
+    content: "⬢";
+    color: #ca161c;
+    vertical-align: top;
+    font-size: 0.9em;
+    opacity: 0.5;
+    margin-right: 4px;
+}
+
+.player.online:before {
+    color: #4edff9;
+    opacity: 0.7;
 }
 
 .player.self {

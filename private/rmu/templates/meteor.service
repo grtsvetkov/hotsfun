@@ -1,0 +1,21 @@
+[Unit]
+Description=RIM Meteor Up - <%= appName %>
+Requires=mongodb.service
+
+[Service]
+Type=forking
+User=meteoruser
+Group=meteoruser
+Environment="ROOT_URL=http://localhost"
+Environment="PORT=80"
+Environment="MONGO_URL=mongodb://localhost:27017/<%= appName %>"
+WorkingDirectory=/opt/<%= appName %>
+ExecStart=/bin/sh /opt/<%= appName %>/config/env.sh
+ExecStop=/bin/kill -9 `ps ax | grep /opt/<%= appName %>/app/main.js | awk '{print $1}'`
+
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=<%= appName %>
+
+[Install]
+WantedBy=multi-user.target

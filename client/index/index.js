@@ -1,20 +1,27 @@
 let userGoToPoolPromise = false;
 
+let adminModalData = new ReactiveVar();
+
 Tracker.autorun(function() {
     let user = Meteor.user();
 
-    if(user) {
+    if(user) { //Изменилось что-то с пользователем
 
-        if(userGoToPoolPromise) {
+        if(userGoToPoolPromise) { //Мы пользователю обещали зайти в пул?
             userGoToPoolPromise = false;
             Meteor.call('user.goToPool');
         }
 
-        console.log('User is changed');
+        if(!_.isEmpty(user.message)) { //Пришло сообщение пользователю
+            if(new Date(user.message.expires) > new Date()) {
+                sAlert[user.message.type](user.message.text);
+            }
+
+            Meteor.call('user.readMessage');
+        }
     }
 
 });
-
 
 let drawTable = function () {
 
@@ -35,12 +42,17 @@ let drawTable = function () {
             $('.tour').append('<div class="result result-'+key+'"><div class="result-top"></div><div class="result-bottom"></div></div>');
         }
 
+        let end = $(line.end);
+
+        if(!end.length) {
+            return;
+        }
+
         let start = $(line.start),
             startWidth = start.width(),
             startLeft = start.position().left,
             startTop = start.position().top + 2,
 
-            end = $(line.end),
             endLeft = end.position().left,
             endTop = end.position().top + end.height() / 2,
 
@@ -66,28 +78,117 @@ let drawTable = function () {
 
 Template.index.rendered = function () {
     drawTable();
+    $(window).resize(drawTable);
 };
 
+Template.index.onDestroyed(function() {
+    $(window).off('resize', drawTable);
+});
+
 Template.index.helpers({
-    
+
+    'isAdmin': function() {
+        return isAdmin();
+    },
+
     'inPool': function() {
-        return Meteor.user() && Meteor.user().pool;
+
+        let user = Meteor.user();
+
+        return user && user.pool;
     },
     
     'pool': function() {
-        return Meteor.users.find({role: 'Client', pool: -1}, {fields: {_id: 1, username: 1}}).fetch();
+        //return Meteor.users.find({role: 'Client', pool: -1}, {fields: {_id: 1, username: 1}}).fetch();
+        return Meteor.users.find({pool: true}).fetch();
+    },
+
+    'command': function(num) {
+        let command = Command.findOne({num: parseInt(num)});
+
+        if(!command) {
+            return;
+        }
+
+        command.online = true;
+
+
+        let list = [];
+
+        _.each(command.list, function(i) {
+            let user = Meteor.users.findOne({_id: i});
+
+            if(!user) {
+                return;
+            }
+
+            if(!user.online) {
+                command.online = false;
+            }
+
+            list.push({
+                _id: user._id,
+                username: user.username,
+                online: user.online
+            })
+        });
+
+        command.list = list;
+        command.count = list.length;
+
+        if(command.count < 5) {
+            command.online = false;
+        }
+
+        Meteor.setTimeout(drawTable, 333);
+        return command;
+    },
+
+    'tour_list': function() {
+
+        let tour_list = [];
+
+        _.each(Tour.find({}).fetch(), function(i){
+
+            let tour_num = i.tour;
+
+            if(!tour_list[tour_num - 1]) {
+                tour_list.push({tour: tour_num, games: []})
+            }
+
+            tour_list[tour_num -1].games.push(i);
+
+        });
+
+        Meteor.setTimeout(drawTable, 333);
+        return tour_list;
     }
 });
 
 Template.index.events({
-    'click .team': function (e) {
+    'click .team a': function (e) {
         e.preventDefault();
 
         $(e.currentTarget).closest('.team').find('.collapse').toggleClass('show');
         drawTable();
         return false;
     },
-    
+
+    'dblclick .team': function(e) {
+        if(e.isDefaultPrevented()) {
+            return;
+        }
+
+        adminModalData.set({
+            type: 'command',
+            tour: parseInt(e.currentTarget.dataset.tour),
+            game: parseInt(e.currentTarget.dataset.game),
+            command: Command.findOne({num: parseInt(e.currentTarget.dataset.num)})
+        });
+
+        $('#adminModal').modal('show');
+    },
+
     'click #goToPool': function() {
 
         if(!Meteor.userId()) {
@@ -106,5 +207,82 @@ Template.index.events({
 Template.player.helpers({
     'isSelf': function() {
         return this._id == Meteor.userId();
+    }
+});
+
+Template.player.events({
+    'dblclick .player': function(e, tpl) {
+
+        e.preventDefault();
+
+        if(!isAdmin()) {
+            return;
+        }
+        
+        adminModalData.set({
+            user: tpl.data,
+            type: 'user',
+            command: Command.findOne({list: tpl.data._id}),
+            command_list: Command.find({}).fetch()
+        });
+
+        $('#adminModal').modal('show');
+    }
+});
+
+Template.indexAdminModal.helpers({
+    'data': function() {
+        return adminModalData.get();
+    }
+});
+
+Template.indexAdminModal.events({
+    'click #userToCommandButton': function(e) { //Добавить в команду
+        Meteor.call('tour.addUserToCommand', e.currentTarget.dataset.user_id, $('#userToCommandSelect').val(), function(err){
+            if(err) {
+                console.log(err);
+                sAlert.error(err.reason);
+            } else {
+                $('#adminModal').modal('hide');
+            }
+        })
+    },
+    
+    'click #userRemoveFromCommandButton': function(e) { //Исключить игрока из команды
+        Meteor.call('tour.removeUserFromCommand', e.currentTarget.dataset.user_id, function(err){
+            if(err) {
+                console.log(err);
+                sAlert.error(err.reason);
+            } else {
+                $('#adminModal').modal('hide');
+            }
+        })
+    },
+
+    'click #commandSetWin': function(e) { //Победитель встречи
+
+        let data = adminModalData.get();
+
+        data.win = e.currentTarget.dataset.num;
+
+        Meteor.call('tour.setWin', data, function(err){
+            if(err) {
+                console.log(err);
+                sAlert.error(err.reason);
+            } else {
+                $('#adminModal').modal('hide');
+            }
+        })
+    },
+
+    'click #commandAddRandom': function(e) { //Добавить случайного игрока
+        Meteor.call('tour.addRandomUser', e.currentTarget.dataset.num, function(err){
+            if(err) {
+                console.log(err);
+                sAlert.error(err.reason);
+            } else {
+                $('#adminModal').modal('hide');
+            }
+        })
     }
 });

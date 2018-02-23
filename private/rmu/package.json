@@ -1,0 +1,33 @@
+{
+  "name": "rmu",
+  "version": "1.0.0",
+  "description": "Production Meteor Deployments",
+  "dependencies": {
+    "archiver": "^1.3.0",
+    "cjson": "^0.5.0",
+    "nodemiral": "^1.1.1",
+    "uuid": "^3.1.0"
+  },
+  "main": "rmu.js",
+  "author": {
+    "name": "Grigrory Tsvetkov",
+    "email": "gr.tsvetkov@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "_id": "rmu@0.1",
+  "scripts": {},
+  "_from": "rmu@latest",
+  "_npmVersion": "2.14.3",
+  "_nodeVersion": "4.1.0",
+  "maintainers": [
+    {
+      "name": "rim",
+      "email": "gr.tsvetkov@gmail.com"
+    }
+  ],
+  "directories": {},
+  "readme": "ERROR: No README data found!"
+}

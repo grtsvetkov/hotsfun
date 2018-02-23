@@ -1,57 +1,92 @@
+var moment = require('moment');
+
 UserModel = {
 
+     /**
+     * Регистрация пользователя
+     * @param {Object} data данные регистрации пользователя 
+     * @returns {String} user_id
+     */
     create: function (data) {
 
-        if (!data.email && data.emails !== undefined && data.emails.length > 0) {
-            data.email = data.emails[0].address;
+        if (!data.username) {
+            throw new Meteor.Error(11, ERROR[11]);
         }
 
-        if (!data.email && !data.username) {
-            throw new Meteor.Error('500', 'Не указан Email или никнэйм');
-        }
-
-        if (data.services == undefined && !data.password) {
-            data.password = '123';//
-        }
-
-        data.status = {online: false};
+        data.online = true;
 
         data.role = 'Client';
+
+        data.pool = false;
+
+        return Accounts.createUser(data);
+    },
+
+    /**
+     * Ввывести всех пользователей в пул
+     */
+    moveAllToPool: function() {
+
+        if(!Accounts.isAdmin()) {
+            throw new Meteor.Error(10, ERROR[1]);
+            return;
+        }
         
-        let user_id = Accounts.createUser(data);
+        _.each(Meteor.users.find({}).fetch(), function(i){
 
-        /*if (data.email) {
-            MailModel.send('emailRegistration', data.email, 'Успешная регистрация', {
-                name: data.email,
-                login: data.email,
-                password: data.password
-            });
-        }*/
+            let flag = Command.findOne({list: i._id}); //Пользователь был в какой-то команде
+            
+            if(flag && i.online) { //Из команды попадает в пул
+                UserModel.sendMsgToUser(i._id, 'success', 'Вы были направлены в общий пул участников', 3);
+            }
 
-        return user_id;
+            Meteor.users.update({_id: i._id}, {$set: {pool: (flag && i.online) || (i.pool && i.online) ? true : false}});
+        })
     },
 
+    /**
+     * Зайти пользователь в пул
+     */
     goToPool: function() {
-        Meteor.users.update({_id: Meteor.userId()}, {$set: {pool: -1}});
+        Meteor.users.update({_id: Meteor.userId()}, {$set: {pool: true}});
     },
 
+    /**
+     * Выйти пользователем из пула
+     */
     outFromPool: function() {
-        Meteor.users.update({_id: Meteor.userId()}, {$set: {pool: 0}});
+        Meteor.users.update({_id: Meteor.userId()}, {$set: {pool: false}});
     },
 
-    loginFromAdmin: function (_id) {
-        let stampedLoginToken = Accounts._generateStampedLoginToken();
-        Accounts._insertLoginToken(_id, stampedLoginToken);
-        return stampedLoginToken;
+    /**
+     * Отправить сообщение пользователю
+     * @param {String} user_id Уникальный идентификатор пользователя
+     * @param {String} text Текст сообщения
+     * @param {Integer} expires Истекает через (integer в минутах)
+     */
+    sendMsgToUser: function(user_id, type, text, expires) {
+
+        if(!Accounts.isAdmin()) {
+            throw new Meteor.Error(10, ERROR[10]);
+            return;
+        }
+
+        Meteor.users.update({_id: user_id}, {$set: {message: {type: type, text: text, expires: moment().add(expires, 'm').toDate()}}});
+    },
+
+    readMessage: function() {
+        Meteor.users.update({_id: Meteor.userId()}, {$set: {message: {}}});
     }
 };
 
 Meteor.methods({
 
     'user.goToPool': UserModel.goToPool,
+    
+    'user.moveAllToPool': UserModel.moveAllToPool,
+    
     'user.outFromPool': UserModel.outFromPool,
 
-
-    'user.loginFromAdmin': UserModel.loginFromAdmin,
-
+    'user.sendMsgToUser': UserModel.sendMsgToUser,
+    'user.readMessage': UserModel.readMessage
 });

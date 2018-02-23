@@ -1,68 +1,53 @@
-const tourCountFromCommandCount = { 2: 1, 4: 3, 8: 4, 16: 5};
-/*
-TourModel = {
-    newTour: function(name, minrang, commandCount) {
+const tourCountFromCommandCount = {2: 1, 4: 3, 8: 4, 16: 5};
 
-        if(!ConModel.isAdmin(this.connection.id)) {
-            throw new Meteor.Error(9, 'Ошибка авторизации');
+TourModel = {
+
+    newTour: function (name, commandCount) {
+
+        if (!Accounts.isAdmin()) {
+            throw new Meteor.Error(10, ERROR[10]);
             return;
         }
 
-        Com.remove({}); //Удаляем название команда
-        Con.remove({online: false}); //Удаляем оффлайн
-        _.each(Con.find().fetch(), function(i){
+        commandCount = commandCount ? parseInt(commandCount) : 8; //Колличестко комманд участников
 
-            if(i.online == false) {
-                Con.remove({_id: i.id})
-            } else {
-                Con.update({_id: i._id}, {$set: {command: 0}}); //Все онлайн коннекшены в общий пулл
-            }
-        });
+        if (!tourCountFromCommandCount[commandCount]) {
+            throw new Meteor.Error(21, ERROR[21]);
+            return;
+        }
 
+        UserModel.moveAllToPool(); //Выгоняем всех в пулл
         Tour.remove({}); //Удаляем турнамент
+        Command.remove({}); //Удаляем все команды
 
-        Env.update({name: 'status'}, { $set: {val: '0'} });
+        let commandPull = []; //Пулл комманд
 
-        if(name) {
-            Env.update({name: 'name'}, {$set: {val: name}});
-        }
-
-        if(minrang) {
-            Env.update({name: 'minrang'}, {$set: {val: minrang}});
-        }
-
-        commandCount = 8; //Колличестко комманд участников
-
-        var tourCount = tourCountFromCommandCount[commandCount]; //Колличество туров в зависимости от участников
-
-        var commandPull = []; //Пулл комманд
-
-        for(var x = 1; x <= commandCount; x++) { //Заполняем пулл комманд
-            Com.insert({num: x, name: 'Команда №'+x, list: []});
+        for (let x = 1; x <= commandCount; x++) { //Заполняем пулл комманд
+            Command.insert({num: x, name: 'Команда №' + x, list: []});
             commandPull.push(x);
         }
 
         commandPull = _.shuffle(commandPull); //Перемешиваем комманды у пулле
-        var commandFromPull = 0; //Текущая комманда из пула, которая будет взята
 
-        for(i = 1; i <= tourCount; i++) { //Создаем туры
+        let commandFromPull = 0; //Текущая комманда из пула (index), которая будет взята
 
-            var matchCount = commandCount / Math.pow(2, i); //Высчитываем колличество матчей в туре
+        //Создаём туры. Колличество туров в зависимости от участников
+        for (let i = 1; i <= tourCountFromCommandCount[commandCount]; i++) { //Создаем туры
 
-            for(j = 1; j <= matchCount; j++) { //Создаем по каждому матчу запись
+            let gameCount = commandCount / Math.pow(2, i); //Высчитываем колличество матчей в туре
 
-                var currentTour = {
+            for (let j = 1; j <= gameCount; j++) { //Создаем по каждому матчу запись
+
+                let currentTour = {
                     tour: i, //Номер тура
-                    match: j, //Номер матча
+                    game: j, //Номер матча
                     commands: [], //Комманды в матче
                     status: 0 //Статус матча
                 };
 
-                if(i == 1) { //Если тур первый - раскидываем случайные 2 комманды из пула в матч
+                if (i == 1) { //Если тур первый - раскидываем случайные 2 комманды из пула в матч
                     currentTour.commands.push(commandPull[commandFromPull], commandPull[commandFromPull + 1]);
                     commandFromPull += 2;
-                } else { //Иначе заполняем командами "0"
-                    //currentTour.commands = [0, 0];
                 }
 
                 Tour.insert(currentTour); //Создаем запись о матче
@@ -70,80 +55,159 @@ TourModel = {
         }
     },
 
-    setWin: function(ds) {
+    setWin: function (ds) {
 
-        if(!ConModel.isAdmin(this.connection.id)) {
-            throw new Meteor.Error(9, 'Ошибка авторизации');
+        if (!Accounts.isAdmin()) {
+            throw new Meteor.Error(10, ERROR[1]);
             return;
         }
 
-        var data = {};
+        let data = {};
 
-        _.each(ds, function(i, k){
+        _.each(ds, function (i, k) { //Работаем с Integer
             data[k] = parseInt(i);
         });
 
-        var flag = Tour.findOne({tour: data.tour, match: data.match, commands: data.win});
-
-        if(!flag) {
-            throw new Meteor.Error(4, 'Ошибка выбора победителя');
+        if (!Tour.findOne({tour: data.tour, game: data.game, commands: data.win, status: 0})) {
+            throw new Meteor.Error(22, ERROR[22]);
             return;
         }
 
-        var countMatch = Tour.find({tour: data.tour}).count();
-        var countNextMatch = countMatch / 2;
+        let countgame = Tour.find({tour: data.tour}).count(), //Колличество матчей в текущем туре
+            countNextgame = countgame / 2, //колличество матчей в следующем туре
+            nextgame = Math.ceil((data.game / countgame) / (  1 / countNextgame  )), //номер следующего матча
+            game = Tour.findOne({tour: data.tour + 1, game: nextgame}); //Выбираем следующий матч
 
-        var nextMatch =  Math.ceil( (data.match / countMatch) / (  1 /  countNextMatch  ) );
+        if (countNextgame >= 1) {
 
-        var match = Tour.findOne({tour: data.tour + 1, match: nextMatch});
-
-        if(countNextMatch >= 1) {
-
-            if (!match) {
-                throw new Meteor.Error(5, 'Ошибка выбора победителя');
+            if (!game) {
+                throw new Meteor.Error(23, ERROR[23]);
                 return;
             }
 
-            if (match.commands.length >= 2) {
-                throw new Meteor.Error(6, 'Ошибка выбора победителя');
+            if (game.commands.length >= 2) {
+                throw new Meteor.Error(24, ERROR[24]);
                 return;
             }
 
-            Tour.update({_id: match._id}, { $push: { commands: data.win}});
+            Tour.update({_id: game._id}, {$push: {commands: data.win}});
 
-        } else {
-            Env.update({name: 'status'}, { $set: {val: String(data.win)} });
+        } else { //Была последняя игра, финал. Определяем победителя турнира.
 
-            var tmp = Con.find({command: {$gt: 0}}).fetch();
+            //Была последняя игра, финал. Определяем победителя турнира.
 
-            Ban.remove({type: 'last_tour'});
-
-            _.each(tmp, function(i){
-                if(i.name  && i.vg_id && i.vg_level && i.command > 0) {
-                    Ban.insert({name: i.name, vg_level: String(i.vg_level), vg_id: i.vg_id, type: 'last_tour'});
-                } else {
-                    console.log(i);
-                }
-            });
         }
 
-        Tour.update({tour: data.tour, match: data.match}, { $set: {status: 1} });
+        Tour.update({tour: data.tour, game: data.game}, {$set: {status: 1}});
     },
 
-    renameCommand: function(num, name) {
+    renameCommand: function (num, name) {
 
-        if(!ConModel.isAdmin(this.connection.id)) {
-            throw new Meteor.Error(9, 'Ошибка авторизации');
+        if (!Accounts.isAdmin()) {
+            throw new Meteor.Error(10, ERROR[10]);
             return;
         }
 
-        Com.update({num: parseInt(num)}, { $set: {name: name} });
+        Command.update({num: parseInt(num)}, {$set: {name: name}});
+    },
+
+    addUserToCommand: function (user_id, command_num) {
+        if (!Accounts.isAdmin()) {
+            throw new Meteor.Error(10, ERROR[10]);
+            return;
+        }
+
+        command_num = parseInt(command_num);
+
+        let command = Command.findOne({num: command_num});
+
+        if (!command) {
+            throw new Meteor.Error(25, ERROR[25]);
+            return;
+        }
+
+        if (command.list.length >= 4) {
+            throw new Meteor.Error(26, ERROR[26]);
+            return;
+        }
+
+        if (Command.findOne({list: user_id})) {
+            throw new Meteor.Error(27, ERROR[27]);
+            return;
+        }
+
+        Command.update({_id: command._id}, {$push: {list: user_id}});
+
+        Meteor.users.update({_id: user_id}, {$set: {pool: false}});
+    },
+
+    addRandomUser: function(command_num) {
+        if (!Accounts.isAdmin()) {
+            throw new Meteor.Error(10, ERROR[10]);
+            return;
+        }
+
+        command_num = parseInt(command_num);
+
+        let command = Command.findOne({num: command_num});
+
+        if (!command) {
+            throw new Meteor.Error(25, ERROR[25]);
+            return;
+        }
+
+        if (command.list.length >= 4) {
+            throw new Meteor.Error(26, ERROR[26]);
+            return;
+        }
+
+        let alreadyInCommand = [];
+
+        _.each(Command.find({}).fetch(), function(i){
+            alreadyInCommand = _.union(alreadyInCommand, i.list);
+        });
+
+        var list = Meteor.users.find({online: true, pool: true,  _id: { $nin: alreadyInCommand }}).fetch();
+
+        if (!list || list.length == 0) {
+            throw new Meteor.Error(29, ERROR[29]);
+            return;
+        }
+
+        list = _.shuffle(list);
+
+        var user = list[_.random(0, list.length - 1)];
+
+        Command.update({_id: command._id}, {$push: {list: user._id}});
+
+        Meteor.users.update({_id: user._id}, {$set: {pool: false}});
+    },
+
+    removeUserFromCommand: function(user_id) {
+        if (!Accounts.isAdmin()) {
+            throw new Meteor.Error(10, ERROR[10]);
+            return;
+        }
+
+        let command = Command.findOne({list: user_id});
+
+        if(!command) {
+            throw new Meteor.Error(28, ERROR[28]);
+            return;
+        }
+
+        Command.update({_id: command._id}, {$pull: {list: user_id}});
+
+        Meteor.users.update({_id: user_id}, {$set: {pool: true}});
     }
 };
 
 Meteor.methods({
     'tour.newTour': TourModel.newTour,
     'tour.setWin': TourModel.setWin,
-    'tour.renameCommand': TourModel.renameCommand
+    'tour.renameCommand': TourModel.renameCommand,
+    'tour.addUserToCommand': TourModel.addUserToCommand,
+    'tour.addRandomUser': TourModel.addRandomUser,
+    'tour.removeUserFromCommand': TourModel.removeUserFromCommand
+
 });
-*/

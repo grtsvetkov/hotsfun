@@ -1,0 +1,16 @@
+[Unit]
+Description=RIM Meteor Up STUD
+
+[Service]
+User=meteoruser
+Group=meteoruser
+ExecStart=/usr/local/bin/stud --config=/opt/stud/stud.conf
+ExecStop=/bin/kill -9 `ps ax | grep config=/opt/stud/stud.conf | awk '{print $1}'`
+Restart=always
+
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=stud
+
+[Install]
+WantedBy=multi-user.target

@@ -3,148 +3,34 @@
         <div class="row">
             <div class="col-10 p-2">
                 <div class="tour container-fluid p-0">
-                    <div class="round-1">
-                        <div class="game game-1-1">
-                            <div class="team team-top">
-                                <a href="#">team1</a>
-                                <div class="collapse">
-                                    <div class="player">player</div>
-                                    <div class="player">player</div>
-                                    <div class="player">player</div>
-                                    <div class="player">player</div>
-                                    <div class="player">player</div>
+                    {{#each tour_list}}
+                        <div class="round-{{tour}}">
+                            {{#each games}}
+                                <div class="game game-{{tour}}-{{game}}">
+                                    <div class="team team-top" data-tour="{{tour}}" data-game="{{game}}" data-num="{{commands.[0]}}">
+                                        {{#with command commands.[0]}}
+                                            <a href="#" class="{{#if online}}online{{/if}}">{{name}} <span class="small">({{list.length}})</span></a>
+                                            <div class="collapse">
+                                                {{#each p in list}}
+                                                    {{>player p}}
+                                                {{/each}}
+                                            </div>
+                                        {{/with}}
+                                    </div>
+                                    <div class="team team-bottom" data-tour="{{tour}}" data-game="{{game}}" data-num="{{commands.[1]}}">
+                                        {{#with command commands.[1]}}
+                                            <a href="#" class="{{#if online}}online{{/if}}">{{name}} <span class="small">({{list.length}})</span></a>
+                                            <div class="collapse">
+                                                {{#each p in list}}
+                                                    {{>player p}}
+                                                {{/each}}
+                                            </div>
+                                        {{/with}}
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="team team-bottom">
-                                <a href="#">team2</a>
-                                <div class="collapse">
-                                    <div class="player">player</div>
-                                    <div class="player">player</div>
-                                    <div class="player">player</div>
-                                    <div class="player">player</div>
-                                    <div class="player">player</div>
-                                </div>
-                            </div>
+                            {{/each}}
                         </div>
-                        <div class="game game-1-2">
-                            <div class="team team-top">
-                                <a href="#">team3</a>
-                                <div class="collapse">
-                                    <div class="player">player</div>
-                                    <div class="player">player</div>
-                                    <div class="player">player</div>
-                                    <div class="player">player</div>
-                                    <div class="player">player</div>
-                                </div>
-                            </div>
-                            <div class="team team-bottom">
-                                <a href="#">team4</a>
-                                <div class="collapse">
-                                    <div class="player">player</div>
-                                    <div class="player">player</div>
-                                    <div class="player">player</div>
-                                    <div class="player">player</div>
-                                    <div class="player">player</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="game game-1-3">
-                            <div class="team team-top">
-                                <a href="#">team5</a>
-                                <div class="collapse">
-                                    <div class="player">player</div>
-                                    <div class="player">player</div>
-                                    <div class="player">player</div>
-                                    <div class="player">player</div>
-                                    <div class="player">player</div>
-                                </div>
-                            </div>
-                            <div class="team team-bottom">
-                                <a href="#">team6</a>
-                                <div class="collapse">
-                                    <div class="player">player</div>
-                                    <div class="player">player</div>
-                                    <div class="player">player</div>
-                                    <div class="player">player</div>
-                                    <div class="player">player</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="game game-1-4">
-                            <div class="team team-top">
-                                <a href="#">team7</a>
-                                <div class="collapse">
-                                    <div class="player">player</div>
-                                    <div class="player">player</div>
-                                    <div class="player">player</div>
-                                    <div class="player">player</div>
-                                    <div class="player">player</div>
-                                </div>
-                            </div>
-                            <div class="team team-bottom">
-                                <a href="#">team8</a>
-                                <div class="collapse">
-                                    <div class="player">player</div>
-                                    <div class="player">player</div>
-                                    <div class="player">player</div>
-                                    <div class="player">player</div>
-                                    <div class="player">player</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="round-2">
-                        <div class="game game-2-1">
-                            <div class="team team-top">
-                                <a href="#">team1</a>
-                                <div class="collapse">
-                                    <div class="player">player</div>
-                                    <div class="player">player</div>
-                                    <div class="player">player</div>
-                                    <div class="player">player</div>
-                                    <div class="player">player</div>
-                                </div>
-                            </div>
-                            <div class="team team-bottom">
-                                <a href="#">team4</a>
-                                <div class="collapse">
-                                    <div class="player">player</div>
-                                    <div class="player">player</div>
-                                    <div class="player">player</div>
-                                    <div class="player">player</div>
-                                    <div class="player">player</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="game game-2-2">
-                            <div class="team team-top">
-                                <a href="#">team6</a>
-                                <div class="collapse">
-                                    <div class="player">player</div>
-                                    <div class="player">player</div>
-                                    <div class="player">player</div>
-                                    <div class="player">player</div>
-                                    <div class="player">player</div>
-                                </div>
-                            </div>
-                            <div class="team team-bottom">
-                                <a href="#">team7</a>
-                                <div class="collapse">
-                                    <div class="player">player</div>
-                                    <div class="player">player</div>
-                                    <div class="player">player</div>
-                                    <div class="player">player</div>
-                                    <div class="player">player</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="round-3">
-                        <div class="game game-3-1">
-                            <div class="team team-top">team</div>
-                            <div class="team team-bottom">team</div>
-                        </div>
-                    </div>
+                    {{/each}}
                     <div class="round-4">
 
                     </div>
@@ -164,8 +50,64 @@
             </div>
         </div>
     </div>
+
+    {{#if isAdmin}}
+        {{>indexAdminModal}}
+    {{/if}}
+</template>
+
+<template name="indexAdminModal">
+    <div id="adminModal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered text-dark" role="document">
+            <div class="modal-content">
+                {{#with data}}
+                    <div class="modal-header">
+                        <h5 class="modal-title text-dark">
+                            {{#if eq type 'user'}}
+                                Игрок {{user.username}}
+                            {{/if}}
+                            {{#if eq type 'command'}}
+                                Команда "<strong>{{command.name}}</strong>"
+                            {{/if}}
+                        </h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        {{#if eq type 'user'}}
+                            {{#unless command}}
+                                <div class="form-group">
+                                    <label for="userToCommandSelect">Добавить игрока в команду:</label>
+                                    <select class="form-control" id="userToCommandSelect">
+                                        {{#each command_list}}
+                                            <option value="{{num}}">{{name}}</option>
+                                        {{/each}}
+                                    </select>
+                                </div>
+                                <button id="userToCommandButton" data-user_id="{{user._id}}" type="button" class="btn btn-primary">Добавить в команду</button>
+                            {{else}}
+                                <button id="userRemoveFromCommandButton" data-user_id="{{user._id}}" type="button" class="btn btn-secondary">Исключить игрока из команды "{{command.name}}"</button>
+                            {{/unless}}
+                        {{/if}}
+                        {{#if eq type 'command'}}
+                            <div class="d-flex justify-content-around">
+                                <button id="commandSetWin" data-num="{{command.num}}" type="button" class="btn btn-success">Победитель встречи</button>
+                                <button id="commandAddRandom" data-num="{{command.num}}" type="button" class="btn btn-primary">Добавить случайного игрока</button>
+                            </div>
+                        {{/if}}
+                        <!--hr class="col-xs-12"-->
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+                    </div>
+                {{/with}}
+            </div>
+        </div>
+    </div>
 </template>
 
 <template name="player">
-    <div class="player {{#if isSelf}}self{{/if}}" data-id="{{_id}}">{{username}}</div>
+    <div class="player {{#if isSelf}}self{{/if}} {{#if online}}online{{/if}}">{{username}}</div>
 </template>

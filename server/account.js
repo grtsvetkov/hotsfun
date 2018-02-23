@@ -1,18 +1,38 @@
-Accounts.onLogin(function(options) {
-   //console.log('onLogin', options) 
+Meteor.onConnection(function (connection) {
+    Meteor.users.update({connection: connection.id}, {$set: {online: true}});
+
+    return connection.onClose(function () {
+        Meteor.users.update({connection: connection.id}, {$set: {online: false, connection: null}});
+    });
 });
 
-Accounts.onLogout(function(data) {
-    Meteor.users.update({_id: data.user._id}, {$set: {pool : 0}});
+Accounts.onLogin(function (data) {
+    Meteor.users.update({_id: data.user._id}, {$set: {connection: data.connection.id, online: true}});
 });
 
-Accounts.onExternalLogin(function(options, user){
+Accounts.onLogout(function (data) {
+    Meteor.users.update({_id: data.user._id}, {$set: {pool: 0, online: false, connection: null}});
+});
+
+Accounts.onExternalLogin(function (options, user) {
     return options;
 });
 
-Accounts.onCreateUser(function(options, user){
-    return _.extend(options, user) ;
+Accounts.onCreateUser(function (options, user) {
+    return _.extend(options, user);
 });
+
+Accounts.isAdmin = function () {
+
+    let result = false, user = Meteor.user();
+    
+    if(Meteor.unSaveRightCall) {
+        result = true;
+        Meteor.unSaveRightCall = false;
+    }
+
+    return result || (user && user._id && user.role && user.role == 'Admin');
+};
 
 Accounts.oauth.registerService('battlenet');
 
@@ -73,7 +93,7 @@ Package.oauth.OAuth.registerService('battlenet', 2, null, function (query) {
             accessToken: accessToken,
             expiresAt: expiresAt
         },
-        options:{
+        options: {
             username: userData.battletag
         }
     };
