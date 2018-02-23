@@ -3,3 +3,4 @@ node_modules/
 mup.json
 /private/
 /public/.well-known/
+/mup.json
