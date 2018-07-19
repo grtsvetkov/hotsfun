@@ -28,9 +28,9 @@ Template.AppLayout.helpers({
             return {
                 name: name,
                 key: key,
-                isCurrent: key == current ? true : false
+                isCurrent: key == current
             }
-        })
+        });
     }
 });
 
@@ -44,6 +44,34 @@ Template.AppLayout.events({
             if(err) {
                 console.log(err);
                 sAlert.error(err.reason);
+            }
+        })
+    },
+
+    'click #newBet': function() {
+        if(!isAdmin()) {
+            return;
+        }
+
+        $('#betModal').modal('show');
+    }
+});
+
+Template.betModal.events({
+    'click .btn-primary': function() {
+        if(!isAdmin()) {
+            return;
+        }
+        
+        let type = $('#betModal-betType').val(),
+            timer = parseInt($('#betModal-betTimer').val());
+
+        Meteor.call('bet.newBet', type, timer, function(err){
+            if(err) {
+                console.log(err);
+                sAlert.error(err.reason);
+            } else {
+                $('#betModal').modal('hide');
             }
         })
     }

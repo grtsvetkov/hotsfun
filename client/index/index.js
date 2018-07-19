@@ -229,32 +229,6 @@ Template.index.events({
     }
 });
 
-Template.player.helpers({
-    'isSelf': function() {
-        return this._id == Meteor.userId();
-    }
-});
-
-Template.player.events({
-    'dblclick .player': function(e, tpl) {
-
-        e.preventDefault();
-
-        if(!isAdmin()) {
-            return;
-        }
-        
-        adminModalData.set({
-            user: tpl.data,
-            type: 'user',
-            command: Command.findOne({list: tpl.data._id}),
-            command_list: Command.find({}).fetch()
-        });
-
-        $('#adminModal').modal('show');
-    }
-});
-
 Template.indexAdminModal.helpers({
     'data': function() {
         return adminModalData.get();
@@ -309,5 +283,102 @@ Template.indexAdminModal.events({
                 $('#adminModal').modal('hide');
             }
         })
+    }
+});
+
+Template.indexBet.helpers({
+    'bet': function() {
+        let bet = Variable.findOne({name: 'bet'});
+
+        if(!bet || !bet.data || [0, 1, 2].indexOf(bet.data.status) < 0) {
+            return;
+        }
+
+        let list = {var1: [], var2: []};
+
+        _.each(bet.data.list, function(item){
+
+            let user = Meteor.users.findOne({_id: item.user_id});
+
+            if(!user && !item.variant) {
+                return;
+            }
+
+            list[item.variant == 1 ? 'var1': 'var2'].push({
+                _id: user._id,
+                username: user.username,
+                online: user.online
+            })
+        });
+
+        bet.list = list;
+
+        let time = parseInt(bet.data.timer);
+
+        var min = Math.floor(time / 60);
+        var sec = time - min * 60;
+
+        if (sec < 10) {
+            sec = '0' + sec;
+        }
+
+        bet.time = min + ':' + sec;
+
+        return bet;
+    }
+});
+
+Template.indexBet.events({
+    'click #adminBetStart': function() {
+        Meteor.call('bet.start', function(err){
+            if(err) {
+                console.log(err);
+                sAlert.error(err.reason);
+            }
+        });
+    },
+
+    'click #adminBetStop': function() {
+        Meteor.call('bet.stop', function(err){
+            if(err) {
+                console.log(err);
+                sAlert.error(err.reason);
+            }
+        });
+    },
+
+    'click #adminBetClose': function() {
+        Meteor.call('bet.close', function(err){
+            if(err) {
+                console.log(err);
+                sAlert.error(err.reason);
+            }
+        });
+    }
+});
+
+Template.player.helpers({
+    'isSelf': function() {
+        return this._id == Meteor.userId();
+    }
+});
+
+Template.player.events({
+    'dblclick .player': function(e, tpl) {
+
+        e.preventDefault();
+
+        if(!isAdmin()) {
+            return;
+        }
+
+        adminModalData.set({
+            user: tpl.data,
+            type: 'user',
+            command: Command.findOne({list: tpl.data._id}),
+            command_list: Command.find({}).fetch()
+        });
+
+        $('#adminModal').modal('show');
     }
 });

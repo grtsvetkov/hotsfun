@@ -6,6 +6,35 @@
 </head>
 
 <body>
+        <!-- Yandex.Metrika counter -->
+        <script type="text/javascript" >
+            (function (d, w, c) {
+                (w[c] = w[c] || []).push(function() {
+                    try {
+                        w.yaCounter48795071 = new Ya.Metrika({
+                            id:48795071,
+                            clickmap:true,
+                            trackLinks:true,
+                            accurateTrackBounce:true,
+                            webvisor:true
+                        });
+                    } catch(e) { }
+                });
+
+                var n = d.getElementsByTagName("script")[0],
+                        s = d.createElement("script"),
+                        f = function () { n.parentNode.insertBefore(s, n); };
+                s.type = "text/javascript";
+                s.async = true;
+                s.src = "https://mc.yandex.ru/metrika/watch.js";
+
+                if (w.opera == "[object Opera]") {
+                    d.addEventListener("DOMContentLoaded", f, false);
+                } else { f(); }
+            })(document, window, "yandex_metrika_callbacks");
+        </script>
+        <noscript><div><img src="https://mc.yandex.ru/watch/48795071" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+        <!-- /Yandex.Metrika counter -->
     {{>sAlert}}
 </body>
 
@@ -31,6 +60,7 @@
                         <a class="dropdown-item" href="#" onclick="Meteor.logout()">Выход</a>
                         {{#if isAdmin}}
                             <a id="newTour" class="dropdown-item" href="#">Новый турнир</a>
+                            <a id="newBet" class="dropdown-item" href="#">Новые Ставки</a>
                         {{/if}}
                     </div>
                 </div>
@@ -41,6 +71,10 @@
 
         <div class="yield pt-5">
             {{>yield}}
+
+            {{#if isAdmin}}
+                {{>betModal}}
+            {{/if}}
         </div>
 
     </div>
@@ -101,4 +135,45 @@
 
 <template name="Loading">
 
+</template>
+
+<template name="betModal">
+    <div id="betModal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered text-dark" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-dark">
+                        Создать новые ставки
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="input-group pb-4 pl-5 pr-5">
+                        <div class="input-group-prepend">
+                            <label class="input-group-text" for="betModal-betType">Тип ставок</label>
+                        </div>
+                        <select class="custom-select" id="betModal-betType">
+                            <option value="1">Красные или синие</option>
+                            <option value="2">Победа или поражение</option>
+                        </select>
+                    </div>
+                    <div class="input-group pb-4 pl-5 pr-5">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">Таймер</span>
+                        </div>
+                        <input type="tel" class="form-control" value="120" id="betModal-betTimer">
+                        <div class="input-group-append">
+                            <span class="input-group-text">сек.</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+                    <button type="button" class="btn btn-primary">Создать новые ставки</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </template>

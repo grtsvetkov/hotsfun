@@ -367,3 +367,32 @@ ul.none {
     background-color: rgba(110, 110, 110, 0.7);
 }
 /*player*/
+
+/* bet */
+#accordionBet .card {
+    background-color: rgba(1, 34, 75, 0.6);
+    box-shadow: inset 0px 0px 40px rgba(28, 28, 28, 0.7);
+    border-radius: 7px;
+}
+
+#headingBet button {
+    color: #ffffff;
+    font-size: 110%;
+}
+
+#collapseBet .player {
+    margin-bottom: 3px;
+}
+
+span.redblue {
+    font-size: 120%;
+}
+
+span.redblue span.red{
+    color: red;
+}
+
+span.redblue span.blue{
+    color: #5c8dff;
+}
+/* bet */

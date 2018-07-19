@@ -2,6 +2,11 @@ const tourCountFromCommandCount = {2: 1, 4: 3, 8: 4, 16: 5};
 
 TourModel = {
 
+    /**
+     * Создать новый турнир
+     * @param name название турнира
+     * @param commandCount колличество комманд участников
+     */
     newTour: function (name, commandCount) {
 
         if (!Accounts.isAdmin()) {
@@ -56,6 +61,10 @@ TourModel = {
         }
     },
 
+    /**
+     * Установить победителя в схватке
+     * @param ds данные схватки
+     */
     setWin: function (ds) {
 
         if (!Accounts.isAdmin()) {
@@ -102,6 +111,11 @@ TourModel = {
         Tour.update({tour: data.tour, game: data.game}, {$set: {status: 1}});
     },
 
+    /**
+     * Переименовать команду участинка
+     * @param num номер команды
+     * @param name новое имя команды
+     */
     renameCommand: function (num, name) {
 
         if (!Accounts.isAdmin()) {
@@ -112,6 +126,11 @@ TourModel = {
         Command.update({num: parseInt(num)}, {$set: {name: name}});
     },
 
+    /**
+     * Добавить пользователя к команде
+     * @param user_id
+     * @param command_num
+     */
     addUserToCommand: function (user_id, command_num) {
         if (!Accounts.isAdmin()) {
             throw new Meteor.Error(10, ERROR[10]);
@@ -142,6 +161,11 @@ TourModel = {
         Meteor.users.update({_id: user_id}, {$set: {pool: false}});
     },
 
+
+    /**
+     * Добавить случайного участника в команду
+     * @param command_num номер команды, в которую необходимо добавить участника
+     */
     addRandomUser: function(command_num) {
         if (!Accounts.isAdmin()) {
             throw new Meteor.Error(10, ERROR[10]);
@@ -184,6 +208,10 @@ TourModel = {
         Meteor.users.update({_id: user._id}, {$set: {pool: false}});
     },
 
+    /**
+     * Удалить пользователя из команды
+     * @param user_id уникальный идентификатор пользователя
+     */
     removeUserFromCommand: function(user_id) {
         if (!Accounts.isAdmin()) {
             throw new Meteor.Error(10, ERROR[10]);

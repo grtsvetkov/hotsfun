@@ -24,14 +24,14 @@ Accounts.onCreateUser(function (options, user) {
 
 Accounts.isAdmin = function () {
 
-    let result = false, user = Meteor.user();
-    
     if(Meteor.unSaveRightCall) {
-        result = true;
         Meteor.unSaveRightCall = false;
+        return true;
     }
 
-    return result || (user && user._id && user.role && user.role == 'Admin');
+    let user = Meteor.user();
+
+    return user && user._id && user.role && user.role == 'Admin';
 };
 
 Accounts.oauth.registerService('battlenet');

@@ -45,7 +45,7 @@ UserModel = {
     },
 
     /**
-     * Зайти пользователь в пул
+     * Зайти пользователем в пул
      */
     goToPool: function() {
         Meteor.users.update({_id: Meteor.userId()}, {$set: {pool: true}});
@@ -88,5 +88,6 @@ Meteor.methods({
     'user.outFromPool': UserModel.outFromPool,
 
     'user.sendMsgToUser': UserModel.sendMsgToUser,
+
     'user.readMessage': UserModel.readMessage
 });
